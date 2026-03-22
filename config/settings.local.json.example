@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx --version)",
+      "Bash(npm view:*)",
+      "Bash(npx:*)",
+      "Bash(node --version:*)",
+      "Bash(nvm list:*)",
+      "Bash(nvm current:*)",
+      "Bash(nvm alias:*)",
+      "Bash(python3:*)",
+      "Bash(source:*)",
+      "Bash(bun:*)",
+      "Bash(bun install:*)",
+      "Bash(lsof:*)",
+      "mcp__plugin_github_github__get_file_contents",
+      "mcp__plugin_Notion_notion__notion-search",
+      "mcp__plugin_Notion_notion__notion-fetch",
+      "mcp__plugin_Notion_notion__notion-update-data-source",
+      "mcp__plugin_Notion_notion__notion-create-pages",
+      "Bash(claude mcp add:*)",
+      "WebFetch(domain:github.com)",
+      "WebSearch"
+    ]
+  }
+}

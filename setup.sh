@@ -122,6 +122,23 @@ claude plugins install marketing-skills --marketplace marketingskills 2>/dev/nul
 claude plugins install interface-design --marketplace interface-design 2>/dev/null || true
 
 echo ""
+echo "=== Installing MCP Servers ==="
+
+echo "Adding Firecrawl MCP (web scraping to markdown)..."
+claude mcp add firecrawl --scope user -- npx -y firecrawl-mcp 2>/dev/null || true
+
+echo "Adding Upstash MCP (Redis/rate limiting)..."
+claude mcp add upstash --scope user -- npx -y @upstash/mcp-server 2>/dev/null || true
+
+# Copy settings.local.json.example if no local settings exist
+if [ ! -f "$CLAUDE_DIR/settings.local.json" ]; then
+  echo ""
+  echo "No settings.local.json found — copying example."
+  cp "$SCRIPT_DIR/config/settings.local.json.example" "$CLAUDE_DIR/settings.local.json"
+  echo "Edit ~/.claude/settings.local.json to add machine-specific permissions."
+fi
+
+echo ""
 echo "=== Setup Complete ==="
 echo ""
 echo "Notes:"
@@ -130,3 +147,7 @@ echo "    Notification hook in settings.json to use notify-send instead."
 echo "  - Run 'claude' to verify everything works."
 echo "  - Plugin install commands may need adjustment if the CLI syntax"
 echo "    has changed. Check 'claude plugins --help' if installs fail."
+echo "  - Project templates are in templates/ — copy to your project root"
+echo "    as .claude.json and fill in project-specific values."
+echo "  - MCP servers (Firecrawl, Upstash) may need API keys set as env vars."
+echo "    FIRECRAWL_API_KEY, UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN"
