@@ -130,6 +130,37 @@ claude mcp add firecrawl --scope user -- npx -y firecrawl-mcp 2>/dev/null || tru
 echo "Adding Upstash MCP (Redis/rate limiting)..."
 claude mcp add upstash --scope user -- npx -y @upstash/mcp-server 2>/dev/null || true
 
+echo ""
+echo "=== Installing gstack (cherry-picked skills) ==="
+
+GSTACK_DIR="$CLAUDE_DIR/skills/gstack"
+if [ -d "$GSTACK_DIR/.git" ]; then
+  echo "gstack already installed, pulling latest..."
+  git -C "$GSTACK_DIR" pull --ff-only 2>/dev/null || true
+else
+  echo "Cloning gstack..."
+  git clone https://github.com/garrytan/gstack.git "$GSTACK_DIR"
+fi
+
+# Build gstack (requires bun)
+if command -v bun &>/dev/null; then
+  echo "Building gstack browse binary..."
+  (cd "$GSTACK_DIR" && bun install && bun run build) 2>/dev/null || echo "  gstack build failed — install bun (https://bun.sh) and re-run"
+else
+  echo "  WARNING: bun not found. gstack /browse and /qa need bun."
+  echo "  Install bun: curl -fsSL https://bun.sh/install | bash"
+  echo "  Then run: cd $GSTACK_DIR && bun install && bun run build"
+fi
+
+echo ""
+echo "Cherry-picked gstack skills to use:"
+echo "  /qa          — QA test your app, find and fix bugs with atomic commits"
+echo "  /review      — Pre-landing PR review (SQL safety, LLM trust boundaries)"
+echo "  /cso         — OWASP Top 10 + STRIDE security audit"
+echo "  /retro       — Weekly engineering retrospective with trends"
+echo "  /investigate — Systematic root-cause debugging (no fixes without RCA)"
+echo "  /browse      — Headless browser (~100ms/cmd, used by /qa)"
+
 # Copy settings.local.json.example if no local settings exist
 if [ ! -f "$CLAUDE_DIR/settings.local.json" ]; then
   echo ""

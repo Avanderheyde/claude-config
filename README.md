@@ -33,6 +33,17 @@ cd claude-config
 - **plankton-code-quality** — Write-time code quality enforcement reference
 - **portless** — Named local dev server URLs
 
+### gstack (cherry-picked from [garrytan/gstack](https://github.com/garrytan/gstack))
+Cloned to `~/.claude/skills/gstack/`. Full 28-skill sprint toolkit, but these 6 are the high-value ones:
+- **`/qa`** — QA test your app in a real browser, find bugs, fix with atomic commits, re-verify, auto-generate regression tests
+- **`/review`** — Pre-landing PR review: SQL safety, LLM trust boundary violations, conditional side effects
+- **`/cso`** — OWASP Top 10 + STRIDE threat model with confidence gating (8/10+ only) and false-positive exclusions
+- **`/retro`** — Weekly engineering retrospective with per-person breakdowns, shipping streaks, test health trends. `retro global` works cross-project
+- **`/investigate`** — Systematic 4-phase debugging with "Iron Law: no fixes without root cause" and max-3-attempts guardrail
+- **`/browse`** — Headless Chromium browser (~100ms/cmd). Used by `/qa` internally. Cookie import from Chrome/Arc/Brave/Edge
+
+The rest of gstack's skills (planning, design review, autoplan, etc.) are installed but overlap with existing superpowers/plugins — use them if curious.
+
 ### Plugins (60+)
 Installed from 7 marketplaces — see `setup.sh` for the full list.
 
@@ -46,6 +57,12 @@ Already provided by plugins (no separate install needed):
 
 ### Project Templates (`templates/`)
 - **claude.json.nextjs-supabase** — Pre-wired `.claude.json` for Next.js + Supabase projects with Supabase MCP and common permissions. Copy to your project root as `.claude.json` and fill in your project ref.
+
+## Prerequisites
+
+- [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code)
+- [Bun](https://bun.sh/) v1.0+ (required for gstack `/browse` and `/qa`)
+- Git
 
 ## Post-Setup
 
