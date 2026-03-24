@@ -63,6 +63,15 @@
             "command": "node \"$HOME/.claude/hooks/scripts/hooks/suggest-compact.js\""
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$HOME/.claude/hooks/scripts/hooks/pre-push-reminder.js\""
+          }
+        ]
       }
     ],
     "PostToolUse": [
