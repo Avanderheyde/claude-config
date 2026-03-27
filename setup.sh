@@ -131,7 +131,7 @@ echo "Adding Upstash MCP (Redis/rate limiting)..."
 claude mcp add upstash --scope user -- npx -y @upstash/mcp-server 2>/dev/null || true
 
 echo ""
-echo "=== Installing gstack (cherry-picked skills) ==="
+echo "=== Installing gstack (full 28-skill sprint toolkit) ==="
 
 GSTACK_DIR="$CLAUDE_DIR/skills/gstack"
 if [ -d "$GSTACK_DIR/.git" ]; then
@@ -153,13 +153,17 @@ else
 fi
 
 echo ""
-echo "Cherry-picked gstack skills to use:"
-echo "  /qa          — QA test your app, find and fix bugs with atomic commits"
-echo "  /review      — Pre-landing PR review (SQL safety, LLM trust boundaries)"
-echo "  /cso         — OWASP Top 10 + STRIDE security audit"
-echo "  /retro       — Weekly engineering retrospective with trends"
-echo "  /investigate — Systematic root-cause debugging (no fixes without RCA)"
-echo "  /browse      — Headless browser (~100ms/cmd, used by /qa)"
+echo "gstack installed — 28 skills available. Key commands:"
+echo "  Sprint:   /office-hours → /plan-ceo-review → /plan-eng-review → /plan-design-review"
+echo "  Build:    /review → /qa → /cso → /ship → /land-and-deploy → /canary"
+echo "  Tools:    /browse /investigate /retro /benchmark /design-review /document-release"
+echo "  Safety:   /careful /freeze /guard /unfreeze"
+echo ""
+echo "superpowers fills the gaps gstack doesn't cover:"
+echo "  TDD:      superpowers:test-driven-development"
+echo "  Parallel:  superpowers:dispatching-parallel-agents"
+echo "  Worktrees: superpowers:using-git-worktrees"
+echo "  Execution: superpowers:executing-plans"
 
 # Copy settings.local.json.example if no local settings exist
 if [ ! -f "$CLAUDE_DIR/settings.local.json" ]; then

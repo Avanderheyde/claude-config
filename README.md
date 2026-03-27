@@ -33,16 +33,30 @@ cd claude-config
 - **plankton-code-quality** — Write-time code quality enforcement reference
 - **portless** — Named local dev server URLs
 
-### gstack (cherry-picked from [garrytan/gstack](https://github.com/garrytan/gstack))
-Cloned to `~/.claude/skills/gstack/`. Full 28-skill sprint toolkit, but these 6 are the high-value ones:
-- **`/qa`** — QA test your app in a real browser, find bugs, fix with atomic commits, re-verify, auto-generate regression tests
-- **`/review`** — Pre-landing PR review: SQL safety, LLM trust boundary violations, conditional side effects
-- **`/cso`** — OWASP Top 10 + STRIDE threat model with confidence gating (8/10+ only) and false-positive exclusions
-- **`/retro`** — Weekly engineering retrospective with per-person breakdowns, shipping streaks, test health trends. `retro global` works cross-project
-- **`/investigate`** — Systematic 4-phase debugging with "Iron Law: no fixes without root cause" and max-3-attempts guardrail
-- **`/browse`** — Headless Chromium browser (~100ms/cmd). Used by `/qa` internally. Cookie import from Chrome/Arc/Brave/Edge
+### gstack + superpowers (complementary, not competing)
+Both installed. gstack provides sprint *roles* (reviewer, QA lead, security officer). superpowers provides process *discipline* (TDD, parallel agents, worktrees).
 
-The rest of gstack's skills (planning, design review, autoplan, etc.) are installed but overlap with existing superpowers/plugins — use them if curious.
+**gstack** ([garrytan/gstack](https://github.com/garrytan/gstack)) — 28 skills, cloned to `~/.claude/skills/gstack/`:
+
+| Phase | Skills |
+|---|---|
+| Think | `/office-hours`, `/plan-ceo-review`, `/plan-eng-review`, `/plan-design-review`, `/autoplan` |
+| Build | `/design-consultation`, `/design-review`, `/careful`, `/freeze`, `/guard`, `/unfreeze` |
+| Review | `/review` (pre-landing), `/cso` (OWASP+STRIDE security audit) |
+| Test | `/qa`, `/qa-only`, `/browse`, `/benchmark`, `/canary` |
+| Ship | `/ship`, `/land-and-deploy`, `/document-release` |
+| Reflect | `/retro` (weekly, cross-project with `/retro global`) |
+| Debug | `/investigate` (4-phase RCA, max-3 attempts) |
+
+**superpowers** fills the gaps gstack doesn't cover:
+
+| Concern | Skill |
+|---|---|
+| Test-driven development | `superpowers:test-driven-development` |
+| Parallel agent execution | `superpowers:dispatching-parallel-agents` |
+| Isolated feature work | `superpowers:using-git-worktrees` |
+| Plan execution with checkpoints | `superpowers:executing-plans` |
+| Skill/plugin development | `superpowers:writing-skills` |
 
 ### Plugins (60+)
 Installed from 7 marketplaces — see `setup.sh` for the full list.
