@@ -144,8 +144,8 @@ fi
 
 # Build gstack (requires bun)
 if command -v bun &>/dev/null; then
-  echo "Building gstack browse binary..."
-  (cd "$GSTACK_DIR" && bun install && bun run build) 2>/dev/null || echo "  gstack build failed — install bun (https://bun.sh) and re-run"
+  echo "Running gstack setup (build + register skills)..."
+  (cd "$GSTACK_DIR" && ./setup) || echo "  gstack setup failed — install bun (https://bun.sh) and re-run"
 else
   echo "  WARNING: bun not found. gstack /browse and /qa need bun."
   echo "  Install bun: curl -fsSL https://bun.sh/install | bash"
