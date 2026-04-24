@@ -118,8 +118,12 @@ format_reset_time() {
     printf "%s" "$result"
 }
 
+# Resolve config directory: CLAUDE_CONFIG_DIR (set by alias) or default ~/.claude
+claude_config_dir="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+
 # ── Extract JSON data ───────────────────────────────────
 model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"')
+model_name=$(echo "$model_name" | sed 's/ *(\([0-9.]*[kKmM]*\) context)/ \1/')
 
 size=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
 [ "$size" -eq 0 ] 2>/dev/null && size=200000
@@ -139,7 +143,7 @@ else
 fi
 
 effort="default"
-settings_path="$HOME/.claude/settings.json"
+settings_path="$claude_config_dir/settings.json"
 if [ -f "$settings_path" ]; then
     effort=$(jq -r '.effortLevel // "default"' "$settings_path" 2>/dev/null)
 fi
@@ -206,8 +210,13 @@ get_oauth_token() {
     fi
 
     if command -v security >/dev/null 2>&1; then
-        local blob
-        blob=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null)
+        local blob keychain_svc="Claude Code-credentials"
+        if [ -n "$CLAUDE_CONFIG_DIR" ]; then
+            local dir_hash
+            dir_hash=$(echo -n "$CLAUDE_CONFIG_DIR" | shasum -a 256 | cut -c1-8)
+            keychain_svc="Claude Code-credentials-${dir_hash}"
+        fi
+        blob=$(security find-generic-password -s "$keychain_svc" -w 2>/dev/null)
         if [ -n "$blob" ]; then
             token=$(echo "$blob" | jq -r '.claudeAiOauth.accessToken // empty' 2>/dev/null)
             if [ -n "$token" ] && [ "$token" != "null" ]; then
@@ -217,7 +226,7 @@ get_oauth_token() {
         fi
     fi
 
-    local creds_file="${HOME}/.claude/.credentials.json"
+    local creds_file="${claude_config_dir}/.credentials.json"
     if [ -f "$creds_file" ]; then
         token=$(jq -r '.claudeAiOauth.accessToken // empty' "$creds_file" 2>/dev/null)
         if [ -n "$token" ] && [ "$token" != "null" ]; then
@@ -260,6 +269,8 @@ if [ -f "$cache_file" ]; then
 fi
 
 if $needs_refresh; then
+    # Stampede lock: bump mtime so parallel panes don't all fetch the API simultaneously.
+    touch "$cache_file"
     token=$(get_oauth_token)
     if [ -n "$token" ] && [ "$token" != "null" ]; then
         response=$(curl -s --max-time 5 \
@@ -270,10 +281,24 @@ if $needs_refresh; then
             -H "User-Agent: claude-code/2.1.34" \
             "https://api.anthropic.com/api/oauth/usage" 2>/dev/null)
         if [ -n "$response" ] && echo "$response" | jq -e '.five_hour' >/dev/null 2>&1; then
-            usage_data="$response"
-            echo "$response" > "$cache_file"
+            # Don't overwrite good cached data with an all-zero/null response —
+            # transient API failures sometimes return utilization=0 with null resets_at.
+            fh_pct=$(echo "$response" | jq -r '.five_hour.utilization // 0')
+            sd_pct=$(echo "$response" | jq -r '.seven_day.utilization // 0')
+            fh_reset=$(echo "$response" | jq -r '.five_hour.resets_at // empty')
+            sd_reset=$(echo "$response" | jq -r '.seven_day.resets_at // empty')
+            if [ "$(printf '%.0f' "$fh_pct" 2>/dev/null)" != "0" ] || \
+               [ "$(printf '%.0f' "$sd_pct" 2>/dev/null)" != "0" ] || \
+               { [ -n "$fh_reset" ] && [ "$fh_reset" != "null" ]; } || \
+               { [ -n "$sd_reset" ] && [ "$sd_reset" != "null" ]; }; then
+                usage_data="$response"
+                echo "$response" > "$cache_file"
+            fi
         fi
     fi
+    # Drop empty stampede-lock file on fetch failure so next render retries
+    # instead of the fresh mtime suppressing updates for cache_max_age.
+    [ -f "$cache_file" ] && [ ! -s "$cache_file" ] && rm -f "$cache_file"
     if [ -z "$usage_data" ] && [ -f "$cache_file" ]; then
         usage_data=$(cat "$cache_file" 2>/dev/null)
     fi
