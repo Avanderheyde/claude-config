@@ -75,9 +75,9 @@ done
 echo ""
 echo "Installing plugins from claude-plugins-official..."
 official_plugins=(
-  feature-dev frontend-design ralph-loop security-guidance superpowers
+  feature-dev frontend-design ralph-loop security-guidance
   context7 code-review github commit-commands code-simplifier playwright
-  Notion vercel supabase sentry typescript-lsp pr-review-toolkit
+  vercel supabase sentry typescript-lsp pr-review-toolkit
   claude-md-management notion
 )
 for plugin in "${official_plugins[@]}"; do
@@ -105,10 +105,13 @@ for plugin in "${workflow_plugins[@]}"; do
 done
 
 # Install plugins from superpowers-marketplace
+# NOTE: the superpowers workflow plugins are intentionally NOT installed —
+# this setup uses gstack + Matt Pocock skills for workflow/process discipline.
+# Only the standalone, non-workflow plugins from this marketplace are kept.
 echo ""
 echo "Installing plugins from superpowers-marketplace..."
 superpowers_plugins=(
-  elements-of-style episodic-memory superpowers superpowers-developing-for-claude-code
+  elements-of-style episodic-memory
 )
 for plugin in "${superpowers_plugins[@]}"; do
   echo "  Installing: $plugin"
@@ -159,11 +162,40 @@ echo "  Build:    /review → /qa → /cso → /ship → /land-and-deploy → /c
 echo "  Tools:    /browse /investigate /retro /benchmark /design-review /document-release"
 echo "  Safety:   /careful /freeze /guard /unfreeze"
 echo ""
-echo "superpowers fills the gaps gstack doesn't cover:"
-echo "  TDD:      superpowers:test-driven-development"
-echo "  Parallel:  superpowers:dispatching-parallel-agents"
-echo "  Worktrees: superpowers:using-git-worktrees"
-echo "  Execution: superpowers:executing-plans"
+echo "=== Installing Matt Pocock skills (engineering + productivity) ==="
+
+# Matt Pocock's skills (https://github.com/mattpocock/skills) — cloned to a
+# vendor dir, then the engineering + productivity skill dirs are symlinked into
+# ~/.claude/skills/ so `git pull` keeps them current. Other categories
+# (deprecated, in-progress, misc, personal) are intentionally skipped.
+MP_DIR="$CLAUDE_DIR/vendor/mattpocock-skills"
+mkdir -p "$CLAUDE_DIR/vendor"
+if [ -d "$MP_DIR/.git" ]; then
+  echo "Matt Pocock skills already installed, pulling latest..."
+  git -C "$MP_DIR" pull --ff-only 2>/dev/null || true
+else
+  echo "Cloning Matt Pocock skills..."
+  git clone --depth 1 https://github.com/mattpocock/skills.git "$MP_DIR"
+fi
+
+mp_count=0
+for cat in engineering productivity; do
+  for d in "$MP_DIR/skills/$cat"/*/; do
+    [ -f "$d/SKILL.md" ] || continue
+    ln -sfn "$d" "$CLAUDE_DIR/skills/$(basename "$d")"
+    mp_count=$((mp_count + 1))
+  done
+done
+echo "Matt Pocock skills linked: $mp_count (run /setup-matt-pocock-skills to configure)"
+
+echo ""
+echo "Workflow stack: gstack (sprint roles/process) + Matt Pocock skills"
+echo "  TDD:        /tdd"
+echo "  Implement:  /implement"
+echo "  Diagnose:   /diagnosing-bugs"
+echo "  Design:     /codebase-design  /domain-modeling"
+echo "  Triage:     /triage  /to-issues  /to-prd"
+echo "  Configure:  /setup-matt-pocock-skills"
 
 # Copy settings.local.json.example if no local settings exist
 if [ ! -f "$CLAUDE_DIR/settings.local.json" ]; then

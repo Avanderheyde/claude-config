@@ -33,8 +33,8 @@ cd claude-config
 - **plankton-code-quality** — Write-time code quality enforcement reference
 - **portless** — Named local dev server URLs
 
-### gstack + superpowers (complementary, not competing)
-Both installed. gstack provides sprint *roles* (reviewer, QA lead, security officer). superpowers provides process *discipline* (TDD, parallel agents, worktrees).
+### Workflow: gstack + Matt Pocock skills
+This setup uses **gstack** for sprint *roles* (reviewer, QA lead, security officer) and **Matt Pocock's skills** for engineering *discipline* (TDD, diagnosis, design, triage). The **superpowers** workflow plugins are intentionally not used — gstack + Matt Pocock cover the same ground with smaller, more composable skills.
 
 **gstack** ([garrytan/gstack](https://github.com/garrytan/gstack)) — 28 skills, cloned to `~/.claude/skills/gstack/`:
 
@@ -48,15 +48,18 @@ Both installed. gstack provides sprint *roles* (reviewer, QA lead, security offi
 | Reflect | `/retro` (weekly, cross-project with `/retro global`) |
 | Debug | `/investigate` (4-phase RCA, max-3 attempts) |
 
-**superpowers** fills the gaps gstack doesn't cover:
+**Matt Pocock skills** ([mattpocock/skills](https://github.com/mattpocock/skills)) — cloned to `~/.claude/vendor/mattpocock-skills/`, with the `engineering` + `productivity` categories symlinked into `~/.claude/skills/`. Run `/setup-matt-pocock-skills` once to configure issue tracker, labels, and docs location.
 
 | Concern | Skill |
 |---|---|
-| Test-driven development | `superpowers:test-driven-development` |
-| Parallel agent execution | `superpowers:dispatching-parallel-agents` |
-| Isolated feature work | `superpowers:using-git-worktrees` |
-| Plan execution with checkpoints | `superpowers:executing-plans` |
-| Skill/plugin development | `superpowers:writing-skills` |
+| Test-driven development | `/tdd` |
+| Build a feature | `/implement` |
+| Diagnose bugs / regressions | `/diagnosing-bugs` |
+| Module / interface design | `/codebase-design`, `/improve-codebase-architecture` |
+| Domain modeling | `/domain-modeling` |
+| Triage & specs | `/triage`, `/to-issues`, `/to-prd` |
+| Stress-test a plan | `/grilling`, `/grill-with-docs` |
+| Handoff / teaching | `/handoff`, `/teach`, `/writing-great-skills` |
 
 ### Plugins (60+)
 Installed from 7 marketplaces — see `setup.sh` for the full list.

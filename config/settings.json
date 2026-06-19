@@ -1,4 +1,8 @@
 {
+  "env": {
+    "ENABLE_TOOL_SEARCH": "true",
+    "CLAUDE_CODE_PROMPT_CACHE_TTL_MINUTES": "60"
+  },
   "permissions": {
     "allow": [
       "Bash(npm run test:*)",
@@ -132,7 +136,7 @@
     "frontend-design@claude-plugins-official": true,
     "ralph-loop@claude-plugins-official": true,
     "security-guidance@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": false,
     "context7@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
     "github@claude-plugins-official": true,
@@ -162,7 +166,6 @@
     "python-development@claude-code-workflows": true,
     "quantitative-trading@claude-code-workflows": true,
     "ui-design@claude-code-workflows": true,
-    "Notion@claude-plugins-official": true,
     "vercel@claude-plugins-official": true,
     "conductor@claude-code-workflows": true,
     "supabase@claude-plugins-official": true,
@@ -173,19 +176,27 @@
     "frontend-mobile-development@claude-code-workflows": true,
     "security-compliance@claude-code-workflows": true,
     "security-scanning@claude-code-workflows": true,
+    "double-shot-latte@superpowers-marketplace": false,
     "elements-of-style@superpowers-marketplace": true,
     "episodic-memory@superpowers-marketplace": true,
-    "superpowers@superpowers-marketplace": true,
-    "superpowers-developing-for-claude-code@superpowers-marketplace": true,
+    "superpowers@superpowers-marketplace": false,
+    "superpowers-developing-for-claude-code@superpowers-marketplace": false,
     "sentry@claude-plugins-official": true,
     "marketing-skills@marketingskills": true,
     "interface-design@interface-design": true,
     "typescript-lsp@claude-plugins-official": true,
     "pr-review-toolkit@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
-    "notion@claude-plugins-official": true
+    "notion@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
-  "voiceEnabled": true,
-  "skipDangerousModePermissionPrompt": true
+  "autoCompactWindow": 400000,
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "agentPushNotifEnabled": true,
+  "voiceEnabled": true
 }
