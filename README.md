@@ -1,6 +1,6 @@
 # Claude Code Config
 
-Personal Claude Code setup — settings, hooks, plugins, commands, skills, and MCP servers.
+Personal Claude Code setup: settings, hooks, plugins, commands, skills, and MCP servers.
 
 ## Quick Setup
 
@@ -27,16 +27,20 @@ cd claude-config
 - **cost-tracker.js** — Tracks token usage and estimated costs to `metrics/costs.jsonl`
 
 ### Commands (`commands/`)
-11 custom slash commands: `/checkpoint`, `/verify`, `/diff-review`, `/learn`, `/project-recap`, `/generate-slides`, `/generate-visual-plan`, `/generate-web-diagram`, `/fact-check`, `/plan-review`, `/learn-eval`
+12 custom slash commands: `/checkpoint`, `/verify`, `/diff-review`, `/learn`, `/project-recap`, `/generate-slides`, `/generate-visual-plan`, `/generate-web-diagram`, `/fact-check`, `/plan-review`, `/learn-eval`, `/goal`
 
 ### Skills (`skills/`)
-- **plankton-code-quality** — Write-time code quality enforcement reference
-- **portless** — Named local dev server URLs
+- **plankton-code-quality**: write-time code quality enforcement reference
+- **portless**: named local dev server URLs
+- **last-90**: the production-readiness pass after a first deploy (authz, monitoring, backups, CI/CD, legal)
+- **vps-saas**: ship a SaaS on one locked-down VPS (levels.io method)
+- **seo-setup**: verification-first technical SEO setup
+- **design-elevate**: give a generic-looking web app a real visual identity
 
-### gstack + superpowers (complementary, not competing)
-Both installed. gstack provides sprint *roles* (reviewer, QA lead, security officer). superpowers provides process *discipline* (TDD, parallel agents, worktrees).
+### Workflow stack: gstack + Matt Pocock + pstack
+Each tool has one job, and duplicates are removed or disabled.
 
-**gstack** ([garrytan/gstack](https://github.com/garrytan/gstack)) — 28 skills, cloned to `~/.claude/skills/gstack/`:
+**gstack** ([garrytan/gstack](https://github.com/garrytan/gstack)), cloned to `~/.claude/skills/gstack/`, provides sprint *roles*:
 
 | Phase | Skills |
 |---|---|
@@ -45,21 +49,19 @@ Both installed. gstack provides sprint *roles* (reviewer, QA lead, security offi
 | Review | `/review` (pre-landing), `/cso` (OWASP+STRIDE security audit) |
 | Test | `/qa`, `/qa-only`, `/browse`, `/benchmark`, `/canary` |
 | Ship | `/ship`, `/land-and-deploy`, `/document-release` |
-| Reflect | `/retro` (weekly, cross-project with `/retro global`) |
-| Debug | `/investigate` (4-phase RCA, max-3 attempts) |
+| Reflect | `/retro` |
+| Debug | `/investigate` |
 
-**superpowers** fills the gaps gstack doesn't cover:
+**Matt Pocock skills** ([mattpocock/skills](https://github.com/mattpocock/skills)), cloned to `~/.claude/vendor/mattpocock-skills/` with `engineering` and `productivity` symlinked into `~/.claude/skills/`, provide engineering discipline: `/tdd`, `/grilling`, `/grill-with-docs`, `/codebase-design`, `/domain-modeling`, `/to-prd`, `/to-issues`, `/implement`, `/triage`, `/handoff`, and more. `grill-me` (an alias of `/grilling`) and `diagnosing-bugs` (duplicates `/investigate`) are skipped.
 
-| Concern | Skill |
-|---|---|
-| Test-driven development | `superpowers:test-driven-development` |
-| Parallel agent execution | `superpowers:dispatching-parallel-agents` |
-| Isolated feature work | `superpowers:using-git-worktrees` |
-| Plan execution with checkpoints | `superpowers:executing-plans` |
-| Skill/plugin development | `superpowers:writing-skills` |
+**pstack** ([cursor/plugins](https://github.com/cursor/plugins/tree/main/pstack), MIT) is poteto's rigor toolkit, converted from Cursor to Claude Code in `vendor/pstack-claude/`. Start with `/pstack:poteto-mode`. Model routing uses `<model>@<effort>` entries in `~/.claude/pstack-models.md` (`/pstack:setup-pstack`). Its `tdd`, `teach`, `recall`, and `automate-me` skills are dropped as duplicates.
+
+**Code review roles:** built-in `/code-review` (any diff or PR), gstack `/review` (pre-landing, part of `/ship`), and pstack `interrogate` (multi-model, inside poteto-mode).
+
+**Shared agent skills** live in `~/.agents/skills/`, installed with `npx skills add`. Codex, Cursor, and Copilot read the same folder. Sources: impeccable, emilkowalski/skills, make-interfaces-feel-better, remotion, vercel-labs/skills, herdr.
 
 ### Plugins (60+)
-Installed from 7 marketplaces — see `setup.sh` for the full list.
+`setup.sh` installs every plugin that `config/settings.json` enables, from 8 marketplaces (7 on GitHub plus the bundled pstack).
 
 ### MCP Servers
 Installed by `setup.sh`:
@@ -101,5 +103,7 @@ The setup copies `settings.local.json.example` to `~/.claude/settings.local.json
 - `double-shot-latte` plugin — Was installed but disabled
 - Plugin cache (`plugins/cache/`) — Reinstalled by `setup.sh`
 - Sessions, metrics, telemetry — Ephemeral runtime data
-- `visual-explainer` skill — Has its own git repo, clone separately if needed
-- `vliw-kernel-optimization.md` — Project-specific skill
+- `visual-explainer` and `resy` skills: their own git repos, cloned by `setup.sh`
+- `vliw-kernel-optimization.md`: project-specific skill
+- Private skills that name private repos or projects, and auto-mode rules that name hosts or keys: kept local only
+- Hooks installed by other tools (herdr): those tools reinstall them

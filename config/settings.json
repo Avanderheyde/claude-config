@@ -132,12 +132,12 @@
     "frontend-design@claude-plugins-official": true,
     "ralph-loop@claude-plugins-official": true,
     "security-guidance@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": false,
     "context7@claude-plugins-official": true,
-    "code-review@claude-plugins-official": true,
+    "code-review@claude-plugins-official": false,
     "github@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": false,
     "playwright@claude-plugins-official": true,
     "api-scaffolding@claude-code-workflows": true,
     "application-performance@claude-code-workflows": true,
@@ -148,7 +148,7 @@
     "code-refactoring@claude-code-workflows": true,
     "code-review-ai@claude-code-workflows": true,
     "codebase-cleanup@claude-code-workflows": true,
-    "comprehensive-review@claude-code-workflows": true,
+    "comprehensive-review@claude-code-workflows": false,
     "context-management@claude-code-workflows": true,
     "database-design@claude-code-workflows": true,
     "database-migrations@claude-code-workflows": true,
@@ -162,30 +162,50 @@
     "python-development@claude-code-workflows": true,
     "quantitative-trading@claude-code-workflows": true,
     "ui-design@claude-code-workflows": true,
-    "Notion@claude-plugins-official": true,
     "vercel@claude-plugins-official": true,
     "conductor@claude-code-workflows": true,
     "supabase@claude-plugins-official": true,
     "debugging-toolkit@claude-code-workflows": true,
     "dependency-management@claude-code-workflows": true,
     "deployment-strategies@claude-code-workflows": true,
-    "error-diagnostics@claude-code-workflows": true,
+    "error-diagnostics@claude-code-workflows": false,
     "frontend-mobile-development@claude-code-workflows": true,
     "security-compliance@claude-code-workflows": true,
     "security-scanning@claude-code-workflows": true,
-    "elements-of-style@superpowers-marketplace": true,
+    "double-shot-latte@superpowers-marketplace": false,
+    "elements-of-style@superpowers-marketplace": false,
     "episodic-memory@superpowers-marketplace": true,
-    "superpowers@superpowers-marketplace": true,
-    "superpowers-developing-for-claude-code@superpowers-marketplace": true,
+    "superpowers@superpowers-marketplace": false,
+    "superpowers-developing-for-claude-code@superpowers-marketplace": false,
     "sentry@claude-plugins-official": true,
     "marketing-skills@marketingskills": true,
     "interface-design@interface-design": true,
     "typescript-lsp@claude-plugins-official": true,
-    "pr-review-toolkit@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": false,
     "claude-md-management@claude-plugins-official": true,
-    "notion@claude-plugins-official": true
+    "notion@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "pstack@pstack-claude": true
   },
   "alwaysThinkingEnabled": true,
   "voiceEnabled": true,
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "env": {
+    "ENABLE_TOOL_SEARCH": "true",
+    "CLAUDE_CODE_PROMPT_CACHE_TTL_MINUTES": "60"
+  },
+  "model": "opus",
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "high"
+    }
+  },
+  "autoCompactWindow": 400000,
+  "tui": "fullscreen",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "skipWorkflowUsageWarning": true,
+  "agentPushNotifEnabled": true
 }
