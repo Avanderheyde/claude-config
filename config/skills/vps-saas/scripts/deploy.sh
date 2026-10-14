@@ -12,8 +12,10 @@ set -euo pipefail
 APP="${APP:?set APP}"
 DOMAIN="${DOMAIN:?set DOMAIN}"
 REPO="${REPO:?set REPO (git url)}"
+# APP and DOMAIN land in root-owned files below, so allow only plain names.
+[[ "$APP" =~ ^[a-z][a-z0-9-]{0,31}$ ]] || { echo "APP must match ^[a-z][a-z0-9-]{0,31}$"; exit 1; }
+[[ "$DOMAIN" =~ ^[A-Za-z0-9.-]+$ ]] || { echo "DOMAIN must be a bare hostname"; exit 1; }
 SRV="/srv/$APP"
-DEPLOY_USER="$(id -un)"
 
 [ -f "/etc/$APP/env" ] || { echo "missing /etc/$APP/env — write it first (0640)"; exit 1; }
 
@@ -34,6 +36,12 @@ npm run build
 cp -r .next/static ".next/standalone/.next/static"
 [ -d public ] && cp -r public ".next/standalone/public" || true
 
+echo "==> service user"
+# The app runs as its own unprivileged user. The deploy user has passwordless
+# sudo, so running the app as it would turn any app RCE into root.
+id -u "$APP" >/dev/null 2>&1 || sudo useradd --system --no-create-home --shell /usr/sbin/nologin "$APP"
+sudo install -d -m 750 -o "$APP" -g "$APP" "/var/lib/$APP"
+
 echo "==> systemd unit"
 sudo tee "/etc/systemd/system/$APP.service" >/dev/null <<EOF
 [Unit]
@@ -42,7 +50,8 @@ After=network.target
 
 [Service]
 Type=simple
-User=$DEPLOY_USER
+User=$APP
+NoNewPrivileges=true
 WorkingDirectory=$SRV
 EnvironmentFile=/etc/$APP/env
 ExecStart=/usr/bin/node $SRV/.next/standalone/server.js

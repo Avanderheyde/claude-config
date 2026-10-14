@@ -70,7 +70,7 @@ root login, UFW (22/80/443 only), fail2ban, unattended-upgrades, installs Node
 ### 3. App: make it VPS-ready (in the repo)
 - `next.config.ts` → `output: "standalone"`.
 - Add Drizzle + better-sqlite3; schema for the app's tables. SQLite file lives at
-  e.g. `/var/lib/<app>/data.db` (outside the repo, on a path the deploy user owns).
+  e.g. `/var/lib/<app>/data.db` (outside the repo, owned by the app's own unprivileged service user).
 - Add Auth.js v5 with the Drizzle SQLite adapter; providers: email (magic link) +
   Google + GitHub. OAuth callback URLs point at the app domain
   (`https://<domain>/api/auth/callback/<provider>`) — the user creates the OAuth
@@ -116,7 +116,7 @@ After=network.target
 
 [Service]
 Type=simple
-User=<deploy>
+User=<app>
 WorkingDirectory=/srv/<app>
 EnvironmentFile=/etc/<app>/env
 ExecStart=/usr/bin/node /srv/<app>/.next/standalone/server.js
