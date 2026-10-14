@@ -74,6 +74,16 @@ Already provided by plugins (no separate install needed):
 ### Project Templates (`templates/`)
 - **claude.json.nextjs-supabase** — Pre-wired `.claude.json` for Next.js + Supabase projects with Supabase MCP and common permissions. Copy to your project root as `.claude.json` and fill in your project ref.
 
+## Codex
+
+`codex/setup-codex.sh` mirrors this setup into Codex (run it after `setup.sh`). It is idempotent:
+
+- `~/.codex/AGENTS.md` links to `~/.claude/CLAUDE.md`, so both tools follow one instruction file.
+- Matt Pocock skills, the custom skills, `visual-explainer`, and `resy` are symlinked into `~/.codex/skills`. Codex already reads `~/.agents/skills`.
+- Slash commands become Codex skills (except `goal`, which Codex has built in, and `learn`/`learn-eval`).
+- gstack installs its Codex build with `./setup --host codex`.
+- context7 runs as a local MCP server, which needs no sign-in.
+
 ## Prerequisites
 
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code)
