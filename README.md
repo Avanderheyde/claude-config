@@ -83,6 +83,7 @@ Already provided by plugins (no separate install needed):
 - Slash commands become Codex skills (except `goal`, which Codex has built in, and `learn`/`learn-eval`).
 - gstack installs its Codex build with `./setup --host codex`.
 - context7 runs as a local MCP server, which needs no sign-in.
+- pstack installs as a Codex plugin from the same bundled folder, with `pstack_poteto_agent` and `pstack_comment_sicko` registered as Codex agent roles. Its `poteto-mode` skill has a table that maps Claude Code tools to Codex tools.
 
 ## Prerequisites
 

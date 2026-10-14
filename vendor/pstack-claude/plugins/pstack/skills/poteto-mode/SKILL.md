@@ -8,7 +8,7 @@ color: yellow
 
 # Poteto mode
 
-**Loading other pstack skills.** pstack skills are hidden from the Skill tool. When this skill names another pstack skill, Read `../<name>/SKILL.md` from this skill's base directory (shown when it loaded). A principle named **x** lives at `../principle-x/SKILL.md`.
+**Loading other pstack skills.** pstack skills are hidden from the Skill tool. When this skill names another pstack skill, Read `../<name>/SKILL.md` from this skill's base directory (shown when it loaded). A principle named **x** lives at `../principle-x/SKILL.md`. In Codex, translate Claude Code tool names with the **Running in Codex** table in `../poteto-mode/SKILL.md`.
 
 Bundled skills live at `../<name>/SKILL.md` from this file, so put this file's absolute path in every `poteto-agent` prompt.
 
@@ -97,6 +97,23 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 **Defaults for every `Agent` call.** File pointers, not inlined context. An explicit model and effort per role, configurable via `/setup-pstack`. Defaults are `sonnet@xhigh` for code and `opus@xhigh` for prose and judgment. An entry `<model>@<effort>` means pass `model: "<model>"` and `effort: "<effort>"` to the Agent tool. Agent spawns run in the background and you are notified when each finishes, so never poll them. Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) go to your strongest judgment model (`opus@xhigh`), whether the task needs judgment on vague intent or is a precisely specified sequence of steps to execute to the letter. Trivial mechanical edits go to `haiku` or a low-effort `sonnet`. Per-role lines in `~/.claude/pstack-models.md` override these defaults and the model choices in the routed skills (`how`, `why`, `arena`, `swarm`, `architect`, `interrogate`, `reflect`). A role with no line keeps its default, and a role line of `inherit-parent` or `auto` runs that role on the parent chat model (omit `model` and `effort`). Each code playbook's configured model comes from its line (`feature, refactoring`, `bug-fix`, `perf-issue`, or `hillclimb`), and the hardest changes read `hardest tasks`. Prose and judgment read `judgment and prose`.
 
 **Match the effort to the job.** Before each spawn, start from the role's line or default and pick the effort the job needs. The `/setup-pstack` budget sets each role's starting effort, xhigh by default. Raise it one step, up to max, for the hardest or subtlest work. Lower it one step for judgment and two or more steps for routine work. Verification is the exception and stays on the `swarm workers` entry (`sonnet@xhigh` by default). Change only the effort and keep the model the role names, so a diverse panel stays diverse. A role on `auto` or `inherit-parent` stays on the parent model. If the Agent tool rejects an entry, use the role's default and say so.
+
+**Running in Codex.** pstack's skills are written with Claude Code tool names. In Codex, translate them as follows and change nothing else.
+
+| Claude Code | Codex |
+|---|---|
+| Agent tool spawn, notification on finish | `spawn_agent` with the brief as `message`, then `wait_agent` (prefer long waits), then `close_agent` |
+| Entry `<model>@<effort>` | omit `model` (Codex cannot run Claude models) and pass `reasoning_effort: "<effort>"`. `inherit-parent` omits both. A panel then differs by brief, not model, so say so in the report. |
+| `subagent_type: general-purpose` or `Explore` | `agent_type: "worker"`, or `"explorer"` for read-only questions |
+| `subagent_type: "pstack:poteto-agent"` / `"pstack:comment-sicko"` | `agent_type: "pstack_poteto_agent"` / `"pstack_comment_sicko"` |
+| `isolation: "worktree"` or `"remote"` | the brief tells the agent to `git worktree add` its own worktree and work only there |
+| AskUserQuestion | `request_user_input` when available, else ask in the reply |
+| Skill tool, skill base directory | Codex lists each skill's path. Sibling pstack skills are at `../<name>/SKILL.md` from that path. |
+| `/loop` | keep working in the turn, or Codex's `/goal` for a long run |
+| `/simplify` | do the simplification pass yourself, then `/no-comments` |
+| `writing-great-skills`, `anthropic-skills:skill-creator` | `mattpocock-skills:writing-great-skills`, Codex's built-in `skill-creator` |
+| `run` skill | run the app directly. gstack `browse` exists in Codex. |
+| Transcripts in `~/.claude/projects/<slug>/` | `~/.codex/sessions/<yyyy>/<mm>/<dd>/rollout-*.jsonl`. Read only this session's file. |
 
 You own every subagent's work. Review the diff and write your own summary, don't pass through what it said. A second opinion is the same prompt against a different model. Agreement is high-signal.
 

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Why
 
-**Loading other pstack skills.** pstack skills are hidden from the Skill tool. When this skill names another pstack skill, Read `../<name>/SKILL.md` from this skill's base directory (shown when it loaded). A principle named **x** lives at `../principle-x/SKILL.md`.
+**Loading other pstack skills.** pstack skills are hidden from the Skill tool. When this skill names another pstack skill, Read `../<name>/SKILL.md` from this skill's base directory (shown when it loaded). A principle named **x** lives at `../principle-x/SKILL.md`. In Codex, translate Claude Code tool names with the **Running in Codex** table in `../poteto-mode/SKILL.md`.
 
 Investigate the motivation and intent behind code. The companion `how` skill answers what the code does and how it works. `why` answers what forces led to its shape.
 

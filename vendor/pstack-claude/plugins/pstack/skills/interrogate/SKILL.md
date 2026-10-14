@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Interrogate
 
-**Loading other pstack skills.** pstack skills are hidden from the Skill tool. When this skill names another pstack skill, Read `../<name>/SKILL.md` from this skill's base directory (shown when it loaded). A principle named **x** lives at `../principle-x/SKILL.md`.
+**Loading other pstack skills.** pstack skills are hidden from the Skill tool. When this skill names another pstack skill, Read `../<name>/SKILL.md` from this skill's base directory (shown when it loaded). A principle named **x** lives at `../principle-x/SKILL.md`. In Codex, translate Claude Code tool names with the **Running in Codex** table in `../poteto-mode/SKILL.md`.
 
 Spawn one reviewer per configured model to adversarially review code changes. The adversarial signal comes from model diversity, not assigned personas. The deliverable is a synthesized verdict. Do NOT auto-apply changes.
 

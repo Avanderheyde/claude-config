@@ -5,13 +5,13 @@ description: Configure which models pstack uses per role and at what reasoning b
 
 # Setup pstack
 
-**Loading other pstack skills.** pstack skills are hidden from the Skill tool. When this skill names another pstack skill, Read `../<name>/SKILL.md` from this skill's base directory (shown when it loaded). A principle named **x** lives at `../principle-x/SKILL.md`.
+**Loading other pstack skills.** pstack skills are hidden from the Skill tool. When this skill names another pstack skill, Read `../<name>/SKILL.md` from this skill's base directory (shown when it loaded). A principle named **x** lives at `../principle-x/SKILL.md`. In Codex, translate Claude Code tool names with the **Running in Codex** table in `../poteto-mode/SKILL.md`.
 
 Write `~/.claude/pstack-models.md`, the file that sets pstack's model per role. pstack skills read it before they spawn a subagent.
 
 ## Model entries
 
-An entry is `<model>@<effort>`. `<model>` is a value the Agent tool's `model` parameter accepts: `opus`, `sonnet`, `haiku`, or `fable`. `<effort>` is a value its `effort` parameter accepts, on the ladder `max` > `xhigh` > `high` > `medium` > `low`. A spawn for `opus@xhigh` passes `model: "opus"` and `effort: "xhigh"`. The alias `inherit-parent` means the role runs on the parent chat model and effort, so the spawn omits both parameters. `auto` is an older name for the same alias.
+An entry is `<model>@<effort>`. `<model>` is a value the Agent tool's `model` parameter accepts: `opus`, `sonnet`, `haiku`, or `fable`. `<effort>` is a value its `effort` parameter accepts, on the ladder `max` > `xhigh` > `high` > `medium` > `low`. A spawn for `opus@xhigh` passes `model: "opus"` and `effort: "xhigh"`. The alias `inherit-parent` means the role runs on the parent chat model and effort, so the spawn omits both parameters. `auto` is an older name for the same alias. Codex reads the same file but cannot run Claude models, so in Codex only the effort part of an entry applies (see **Running in Codex** in `../poteto-mode/SKILL.md`).
 
 ## Steps
 

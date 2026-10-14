@@ -84,6 +84,33 @@ if [ -x "$CLAUDE_DIR/skills/gstack/setup" ]; then
   (cd "$CLAUDE_DIR/skills/gstack" && ./setup --host codex) || echo "  gstack codex setup failed; rerun it from $CLAUDE_DIR/skills/gstack"
 fi
 
+echo "=== pstack (Codex plugin + agent roles) ==="
+PSTACK_DIR="$CLAUDE_DIR/vendor/pstack-claude"
+if [ -d "$PSTACK_DIR/.agents/plugins" ]; then
+  codex plugin marketplace add "$PSTACK_DIR" >/dev/null 2>&1 || true
+  codex plugin add pstack@pstack-claude >/dev/null 2>&1 || echo "  pstack plugin install failed; try: codex plugin add pstack@pstack-claude"
+  # Codex custom agents: a role TOML per pstack agent, registered in config.toml.
+  mkdir -p "$CODEX_DIR/agents"
+  python3 - "$PSTACK_DIR/plugins/pstack/agents" "$CODEX_DIR" <<'PY'
+import json, os, re, sys
+src, codex = sys.argv[1], sys.argv[2]
+cfg_path = os.path.join(codex, "config.toml")
+cfg = open(cfg_path).read() if os.path.exists(cfg_path) else ""
+for f in sorted(os.listdir(src)):
+    if not f.endswith(".md"):
+        continue
+    fm, body = open(os.path.join(src, f)).read().split("---", 2)[1:]
+    name = "pstack_" + re.search(r"^name:\s*(\S+)", fm, re.M).group(1).replace("-", "_")
+    desc = re.search(r"^description:\s*(.+)$", fm, re.M).group(1).strip()
+    role = os.path.join(codex, "agents", name + ".toml")
+    open(role, "w").write("developer_instructions = " + json.dumps(body.strip()) + "\n")
+    if not re.search(rf"^\[agents\.{name}\]", cfg, re.M):
+        with open(cfg_path, "a") as fh:
+            fh.write(f"\n[agents.{name}]\ndescription = {json.dumps(desc)}\nconfig_file = {json.dumps(role)}\n")
+    print("  role:", name)
+PY
+fi
+
 echo "=== MCP servers ==="
 # Local stdio server: no sign-in needed (the hosted URL requires OAuth).
 codex mcp get context7 >/dev/null 2>&1 || codex mcp add context7 -- npx -y @upstash/context7-mcp
