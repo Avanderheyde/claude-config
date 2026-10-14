@@ -1,0 +1,17 @@
+{
+  "name": "pstack",
+  "version": "0.15.24-claude.3",
+  "description": "poteto's pstack (cursor/plugins), converted for Claude Code and Codex: rigorous agent workflows, playbooks, and principles.",
+  "author": { "name": "Lauren Tan" },
+  "homepage": "https://github.com/cursor/plugins/tree/main/pstack",
+  "repository": "https://github.com/cursor/plugins",
+  "license": "MIT",
+  "keywords": ["pstack", "poteto-mode", "workflow", "principles", "subagents", "unslop"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "pstack",
+    "shortDescription": "Rigorous agent workflows: poteto-mode, playbooks, principles",
+    "developerName": "Lauren Tan",
+    "category": "Developer Tools"
+  }
+}

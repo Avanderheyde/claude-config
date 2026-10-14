@@ -26,8 +26,6 @@ fi
 mkdir -p "$CLAUDE_DIR/hooks/scripts/hooks"
 mkdir -p "$CLAUDE_DIR/hooks/scripts/lib"
 mkdir -p "$CLAUDE_DIR/commands"
-mkdir -p "$CLAUDE_DIR/skills/plankton-code-quality"
-mkdir -p "$CLAUDE_DIR/skills/portless"
 mkdir -p "$CLAUDE_DIR/skills/learned"
 mkdir -p "$CLAUDE_DIR/sessions"
 mkdir -p "$CLAUDE_DIR/metrics"
@@ -50,8 +48,11 @@ cp "$SCRIPT_DIR/config/commands/"*.md "$CLAUDE_DIR/commands/"
 
 # Copy skills
 echo "Copying custom skills..."
-cp "$SCRIPT_DIR/config/skills/plankton-code-quality/SKILL.md" "$CLAUDE_DIR/skills/plankton-code-quality/"
-cp "$SCRIPT_DIR/config/skills/portless/SKILL.md" "$CLAUDE_DIR/skills/portless/"
+for skill in "$SCRIPT_DIR/config/skills/"*/; do
+  name="$(basename "$skill")"
+  mkdir -p "$CLAUDE_DIR/skills/$name"
+  cp -R "$skill". "$CLAUDE_DIR/skills/$name/"
+done
 
 echo ""
 echo "=== Installing Plugins ==="
@@ -65,64 +66,27 @@ marketplaces=(
   "coreyhaines31/marketingskills"
   "Dammyjay93/interface-design"
   "lackeyjb/playwright-skill"
+  "https://github.com/tobi/qmd.git"
 )
 for mp in "${marketplaces[@]}"; do
   echo "  Adding marketplace: $mp"
-  claude plugins add-marketplace "$mp" 2>/dev/null || true
+  claude plugin marketplace add "$mp" 2>/dev/null || true
 done
 
-# Install plugins from official marketplace
+# pstack (poteto's Cursor plugin, converted for Claude Code) ships in this repo.
+PSTACK_DIR="$CLAUDE_DIR/vendor/pstack-claude"
+mkdir -p "$CLAUDE_DIR/vendor"
+rsync -a --delete --exclude .git "$SCRIPT_DIR/vendor/pstack-claude/" "$PSTACK_DIR/"
+claude plugin marketplace add "$PSTACK_DIR" 2>/dev/null || true
+
+# Install every plugin that settings.json enables, so the two never drift.
 echo ""
-echo "Installing plugins from claude-plugins-official..."
-official_plugins=(
-  feature-dev frontend-design ralph-loop security-guidance
-  context7 code-review github commit-commands code-simplifier playwright
-  vercel supabase sentry typescript-lsp pr-review-toolkit
-  claude-md-management notion
-)
-for plugin in "${official_plugins[@]}"; do
+echo "Installing enabled plugins from settings.json..."
+python3 -c 'import json,sys; [print(k) for k,v in json.load(open(sys.argv[1]))["enabledPlugins"].items() if v]' \
+  "$SCRIPT_DIR/config/settings.json" | while read -r plugin; do
   echo "  Installing: $plugin"
-  claude plugins install "$plugin" --marketplace claude-plugins-official 2>/dev/null || true
+  claude plugin install "$plugin" 2>/dev/null || true
 done
-
-# Install plugins from claude-code-workflows
-echo ""
-echo "Installing plugins from claude-code-workflows..."
-workflow_plugins=(
-  api-scaffolding application-performance backend-development cicd-automation
-  cloud-infrastructure code-documentation code-refactoring code-review-ai
-  codebase-cleanup comprehensive-review context-management database-design
-  database-migrations deployment-validation developer-essentials
-  documentation-generation error-debugging kubernetes-operations
-  observability-monitoring performance-testing-review python-development
-  quantitative-trading ui-design conductor debugging-toolkit
-  dependency-management deployment-strategies error-diagnostics
-  frontend-mobile-development security-compliance security-scanning
-)
-for plugin in "${workflow_plugins[@]}"; do
-  echo "  Installing: $plugin"
-  claude plugins install "$plugin" --marketplace claude-code-workflows 2>/dev/null || true
-done
-
-# Install plugins from superpowers-marketplace
-# NOTE: the superpowers workflow plugins are intentionally NOT installed —
-# this setup uses gstack + Matt Pocock skills for workflow/process discipline.
-# Only the standalone, non-workflow plugins from this marketplace are kept.
-echo ""
-echo "Installing plugins from superpowers-marketplace..."
-superpowers_plugins=(
-  elements-of-style episodic-memory
-)
-for plugin in "${superpowers_plugins[@]}"; do
-  echo "  Installing: $plugin"
-  claude plugins install "$plugin" --marketplace superpowers-marketplace 2>/dev/null || true
-done
-
-# Install from other marketplaces
-echo ""
-echo "Installing plugins from other marketplaces..."
-claude plugins install marketing-skills --marketplace marketingskills 2>/dev/null || true
-claude plugins install interface-design --marketplace interface-design 2>/dev/null || true
 
 echo ""
 echo "=== Installing MCP Servers ==="
@@ -162,40 +126,45 @@ echo "  Build:    /review → /qa → /cso → /ship → /land-and-deploy → /c
 echo "  Tools:    /browse /investigate /retro /benchmark /design-review /document-release"
 echo "  Safety:   /careful /freeze /guard /unfreeze"
 echo ""
-echo "=== Installing Matt Pocock skills (engineering + productivity) ==="
-
-# Matt Pocock's skills (https://github.com/mattpocock/skills) — cloned to a
-# vendor dir, then the engineering + productivity skill dirs are symlinked into
-# ~/.claude/skills/ so `git pull` keeps them current. Other categories
-# (deprecated, in-progress, misc, personal) are intentionally skipped.
-MP_DIR="$CLAUDE_DIR/vendor/mattpocock-skills"
-mkdir -p "$CLAUDE_DIR/vendor"
-if [ -d "$MP_DIR/.git" ]; then
-  echo "Matt Pocock skills already installed, pulling latest..."
-  git -C "$MP_DIR" pull --ff-only 2>/dev/null || true
-else
-  echo "Cloning Matt Pocock skills..."
-  git clone --depth 1 https://github.com/mattpocock/skills.git "$MP_DIR"
-fi
-
-mp_count=0
-for cat in engineering productivity; do
-  for d in "$MP_DIR/skills/$cat"/*/; do
-    [ -f "$d/SKILL.md" ] || continue
-    ln -sfn "$d" "$CLAUDE_DIR/skills/$(basename "$d")"
-    mp_count=$((mp_count + 1))
-  done
-done
-echo "Matt Pocock skills linked: $mp_count (run /setup-matt-pocock-skills to configure)"
 
 echo ""
-echo "Workflow stack: gstack (sprint roles/process) + Matt Pocock skills"
-echo "  TDD:        /tdd"
-echo "  Implement:  /implement"
-echo "  Diagnose:   /diagnosing-bugs"
-echo "  Design:     /codebase-design  /domain-modeling"
-echo "  Triage:     /triage  /to-issues  /to-prd"
-echo "  Configure:  /setup-matt-pocock-skills"
+echo "=== Installing Matt Pocock skills ==="
+MATT_DIR="$CLAUDE_DIR/vendor/mattpocock-skills"
+if [ -d "$MATT_DIR/.git" ]; then
+  git -C "$MATT_DIR" pull --ff-only 2>/dev/null || true
+else
+  git clone https://github.com/mattpocock/skills.git "$MATT_DIR"
+fi
+# grill-me only aliases /grilling; diagnosing-bugs duplicates gstack /investigate.
+for skill in "$MATT_DIR"/skills/engineering/*/ "$MATT_DIR"/skills/productivity/*/; do
+  name="$(basename "$skill")"
+  case "$name" in grill-me|diagnosing-bugs) continue ;; esac
+  ln -sfn "$skill" "$CLAUDE_DIR/skills/$name"
+done
+
+echo ""
+echo "=== Installing shared agent skills (~/.agents/skills, also read by Codex) ==="
+agent_skills=(
+  "pbakaus/impeccable"
+  "emilkowalski/skills"
+  "jakubkrehel/make-interfaces-feel-better"
+  "remotion-dev/skills"
+  "vercel-labs/skills"
+  "herdrdev/herdr"
+)
+for src in "${agent_skills[@]}"; do
+  echo "  Adding: $src"
+  npx -y skills add "$src" -g -y 2>/dev/null || true
+done
+
+echo ""
+echo "=== Installing standalone skill repos ==="
+for repo in "nicobailon/visual-explainer" "Avanderheyde/resy-skills"; do
+  name="$(basename "$repo")"; [ "$name" = "resy-skills" ] && name="resy"
+  dest="$CLAUDE_DIR/skills/$name"
+  if [ -d "$dest/.git" ]; then git -C "$dest" pull --ff-only 2>/dev/null || true
+  else git clone "https://github.com/$repo.git" "$dest"; fi
+done
 
 # Copy settings.local.json.example if no local settings exist
 if [ ! -f "$CLAUDE_DIR/settings.local.json" ]; then

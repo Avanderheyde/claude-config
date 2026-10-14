@@ -1,0 +1,11 @@
+{
+  "name": "pstack-claude",
+  "owner": { "name": "Avanderheyde" },
+  "plugins": [
+    {
+      "name": "pstack",
+      "source": "./plugins/pstack",
+      "description": "poteto's pstack converted from Cursor to Claude Code"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "pstack-claude",
+  "interface": { "displayName": "pstack (Claude Code + Codex)" },
+  "plugins": [
+    {
+      "name": "pstack",
+      "source": { "source": "local", "path": "./plugins/pstack" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Developer Tools"
+    }
+  ]
+}
